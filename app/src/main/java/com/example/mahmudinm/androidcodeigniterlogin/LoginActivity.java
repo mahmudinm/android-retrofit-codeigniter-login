@@ -48,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
 
         session = new SessionManager(getApplicationContext());
 
+        if (session.isLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
+
+
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtPassword = (EditText) findViewById(R.id.txtPassword);
         login = (Button) findViewById(R.id.login);
