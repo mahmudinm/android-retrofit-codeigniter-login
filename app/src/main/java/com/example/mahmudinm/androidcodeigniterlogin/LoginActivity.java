@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -45,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
 
+        session = new SessionManager(getApplicationContext());
+
         txtUsername = (EditText) findViewById(R.id.txtUsername);
         txtPassword = (EditText) findViewById(R.id.txtPassword);
         login = (Button) findViewById(R.id.login);
@@ -66,21 +69,28 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseAuth> call, Response<ResponseAuth> response) {
                         progressDialog.dismiss();
-                        session.createLoginSession(
-                                response.body().getId(),
-                                response.body().getUsername(),
-                                "Bearer " + response.body().getToken()
-                        );
-                        finish();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
+
+                        String id = response.body().getId();
+                        if (TextUtils.isEmpty(id)){
+                            Toast.makeText(LoginActivity.this, "Sorry, Wrong Username Or Password", Toast.LENGTH_SHORT).show();
+                        } else {
+                            session.createLoginSession(
+                                    response.body().getId(),
+                                    response.body().getUsername(),
+                                    "Bearer " + response.body().getToken()
+                            );
+                            finish();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
 
                     }
 
                     @Override
                     public void onFailure(Call<ResponseAuth> call, Throwable t) {
                         progressDialog.dismiss();
-
+                        Toast.makeText(LoginActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                        t.printStackTrace();
                     }
                 });
 
